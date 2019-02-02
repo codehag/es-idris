@@ -1,4 +1,5 @@
-module ObjectType.Helpers
+||| Implmentation details not reflected in the specification
+module ObjectType.ImplementationDetails
 import ObjectType.Type
 
 ||| ------- Internal Helpers ----------
@@ -10,11 +11,11 @@ _findProperty propertyKey ((y, a) :: xs) = case (y == propertyKey) of
                                   False => _findProperty propertyKey xs
 
 export
-_defineInList : ( List (String, DataProperty)) ->
+_defineInList : ( List (String, AccessorProperty)) ->
                ( propertyKey : String ) ->
                ( value : String ) ->
-               List (String, DataProperty)
-_defineInList [] propertyKey value = [(propertyKey, MkDataProperty value False False False)]
+               List (String, AccessorProperty)
+_defineInList [] propertyKey value = [(propertyKey, MkAccessorProperty value Nothing Nothing False False False)]
 _defineInList ((y, x) :: xs) propertyKey value =
   case (y == propertyKey) of
        False => (y, x) :: _defineInList xs propertyKey value
@@ -30,15 +31,15 @@ _assignmentResult : Maybe a -> b -> Either b a
 _assignmentResult maybe b = maybeToEither b maybe
 
 export
-_extractKeys : List (String, DataProperty) -> List String
+_extractKeys : List (String, AccessorProperty) -> List String
 _extractKeys [] = []
 _extractKeys ((y, x) :: xs) = y :: _extractKeys xs
 
 ||| Delete Helpers
 export
-_removeFromList : ( list : List (String, DataProperty)) ->
+_removeFromList : ( list : List (String, AccessorProperty)) ->
                ( propertyKey : String ) ->
-               List (String, DataProperty)
+               List (String, AccessorProperty)
 _removeFromList [] propertyKey = []
 _removeFromList ((y, x) :: xs) propertyKey =
   case (y == propertyKey) of
@@ -48,6 +49,6 @@ _removeFromList ((y, x) :: xs) propertyKey =
 export
 _delete : ( this : Object ) -> ( propertyKey : String ) -> Object
 _delete this propertyKey =
-  record { _Properties_ = _removeFromList (_Properties_ this) propertyKey } this
+  record { _AccessorProperties_ = _removeFromList (_AccessorProperties_ this) propertyKey } this
 
 

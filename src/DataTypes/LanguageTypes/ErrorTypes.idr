@@ -1,0 +1,4 @@
+module ErrorTypes
+
+data TypeError
+

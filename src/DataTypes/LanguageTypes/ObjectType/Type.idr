@@ -5,20 +5,26 @@ mutual
   ||| 6.1.6 Object Type
   ||| An Object is logically a collection of properties. Each property is either a data property, or
   ||| an accessor property
+  ||| ---
+  ||| TODO: make it possible to have either String or Symbol as Key
+  ||| TODO: make it possible to have either DataProperty or AccessorProperty as value
   public export
   record Object where
     constructor MkObject
     _Prototype_ : Maybe Object
     _Extensible_: Bool
-    _Properties_ : List (String, DataProperty)
+    _DataProperties_ : List (String, DataProperty)
+    _AccessorProperties_ : List (String, AccessorProperty)
 
   public export
   record Function where
     constructor MkFunction
     _Prototype_ : Maybe Function
-    _F_: function
+    _Constructor_ : Maybe Function
+    _Call_ : function
     _Extensible_ : Bool
-    _Properties_ : List (String, DataProperty)
+    _DataProperties_ : List (String, DataProperty)
+    _AccessorProperties_ : List (String, AccessorProperty)
 
   ||| A data property associates a key value with an ECMAScript language value and a set of Boolean
   ||| attributes.
@@ -38,7 +44,7 @@ mutual
     _Get_, _Set_ : Maybe Function
     _Writable_, _Enumerable_, _Configurable_ : Bool
 
-||| Default unchangable values
+|||
 functionLength : DataProperty
 functionLength = MkDataProperty 1 False False False
 
@@ -47,14 +53,10 @@ test : DataProperty
 test = MkDataProperty "test" False False False
 
 fakeget : Function
-fakeget = MkFunction Nothing True True [
-  ("length", functionLength)
-  ]
+fakeget = MkFunction Nothing Nothing True True [("length", functionLength)] []
 
 fakeset : Function
-fakeset = MkFunction Nothing True True [
-  ("length", functionLength)
-  ]
+fakeset = MkFunction Nothing Nothing True True [("length", functionLength)] []
 
 test2 : AccessorProperty
 test2 = MkAccessorProperty "test" (Just fakeget) (Just fakeset) False False False

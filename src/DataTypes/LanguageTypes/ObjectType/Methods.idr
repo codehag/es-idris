@@ -1,6 +1,6 @@
 module ObjectType.Methods
 import ObjectType.Type
-import ObjectType.Helpers
+import ObjectType.ImplementationDetails
 
 ||| Determine the object that provides inherited properties for this object. A null value indicates
 ||| that there are no inherited properties.
@@ -31,8 +31,8 @@ preventExtensions this = record { _Extensible_ = False } this
 ||| Return a Property Descriptor for the own property of this object whose key is propertyKey, or
 ||| undefined if no such property exists.
 export
-getOwnProperty : ( this : Object ) -> ( propertyKey : String ) -> Maybe DataProperty
-getOwnProperty this propertyKey = let keys = _Properties_ this in
+getOwnProperty : ( this : Object ) -> ( propertyKey : String ) -> Maybe AccessorProperty
+getOwnProperty this propertyKey = let keys = _AccessorProperties_ this in
                                       _findProperty propertyKey keys
 
 
@@ -46,7 +46,7 @@ getOwnProperty this propertyKey = let keys = _Properties_ this in
 export
 defineOwnProperty : ( this : Object ) -> ( propertyKey : String ) -> ( value : String ) -> Object
 defineOwnProperty this propertyKey value =
-  record { _Properties_ = _defineInList (_Properties_ this) propertyKey value } this
+  record { _AccessorProperties_ = _defineInList (_AccessorProperties_ this) propertyKey value } this
 
 ||| Return a Boolean value indicating whether this object already has either an own or inherited
 ||| property whose key is propertyKey.
@@ -63,7 +63,7 @@ hasProperty this propertyKey = case (getOwnProperty this propertyKey) of
 ||| NOTEget also within prototype chain unlike getOwnProperty? no function yet as we only have
 ||| Simple Language Types. True false return value not complete yet
 export
-get : ( this : Object ) -> ( propertyKey : String ) -> Maybe DataProperty
+get : ( this : Object ) -> ( propertyKey : String ) -> Maybe AccessorProperty
 get this propertyKey = case (getOwnProperty this propertyKey) of
                             Nothing => case (_Prototype_ this) of
                                             Nothing => Nothing
@@ -95,5 +95,5 @@ delete this propertyKey =
 ||| Return a List whose elements are all of the own property keys for the object.
 export
 ownPropertyKeys : ( this : Object ) -> List String
-ownPropertyKeys this = _extractKeys (_Properties_ this)
+ownPropertyKeys this = _extractKeys (_AccessorProperties_ this)
 
