@@ -1,0 +1,18 @@
+module DataTypes.SpecificationTypes.Record
+
+export
+record Record where
+  constructor MkRecord
+  _Fields_ : List (String, a)
+
+_lookup : ( propertyKey : String ) -> ( keys : List (String, a)) -> Maybe a
+_lookup propertyKey [] = Nothing
+_lookup propertyKey ((y, a) :: xs) = case (y == propertyKey) of
+                                  True => Just a
+                                  False => _lookup propertyKey xs
+
+lookupInRecord_rhs : (rec : Record) -> (propertyKey : String) -> (keys : List (String, a)) -> Maybe a
+
+lookupInRecord : (rec : Record ) -> ( propertyKey : String ) -> ( keys : List (String, a)) -> Maybe a
+lookupInRecord rec propertyKey keys = lookupInRecord_rhs rec propertyKey keys
+
